@@ -1,7 +1,6 @@
 lazy val akkaV            = "2.5.17"
 lazy val akkaHTTPV        = "10.1.5"
 lazy val doobieV          = "0.6.0"
-lazy val bcryptV          = "3.1"
 lazy val logbackV         = "1.2.3"
 lazy val circeSupportV    = "1.22.0"
 lazy val circeV           = "0.10.1"
@@ -32,7 +31,6 @@ lazy val root = (project in file(".")).
 //      "io.circe"              %% "circe-optics"                      % "0.10.0",
       "org.tpolecat"          %% "doobie-core"                       % doobieV,
       "org.tpolecat"          %% "doobie-postgres"                   % doobieV,
-      "com.github.t3hnar"     %% "scala-bcrypt"                      % bcryptV,
       "ch.qos.logback"        %  "logback-classic"                   % logbackV,
     )
   )
