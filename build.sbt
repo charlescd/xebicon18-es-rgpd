@@ -4,6 +4,7 @@ lazy val doobieV          = "0.6.0"
 lazy val logbackV         = "1.2.3"
 lazy val circeSupportV    = "1.22.0"
 lazy val circeV           = "0.10.1"
+lazy val akkaStreamKafka  = "0.22"
 
 lazy val root = (project in file(".")).
   settings(
@@ -23,12 +24,11 @@ lazy val root = (project in file(".")).
       "com.typesafe.akka"     %% "akka-stream"                       % akkaV,
       "com.typesafe.akka"     %% "akka-http"                         % akkaHTTPV,
       "com.typesafe.akka"     %% "akka-http-core"                    % akkaHTTPV,
-      "com.typesafe.akka"     %% "akka-stream-kafka"                 % "0.22",
+      "com.typesafe.akka"     %% "akka-stream-kafka"                 % akkaStreamKafka,
       "de.heikoseeberger"     %% "akka-http-circe"                   % circeSupportV,
       "io.circe"              %% "circe-core"                        % circeV,
       "io.circe"              %% "circe-generic"                     % circeV,
       "io.circe"              %% "circe-parser"                      % circeV,
-//      "io.circe"              %% "circe-optics"                      % "0.10.0",
       "org.tpolecat"          %% "doobie-core"                       % doobieV,
       "org.tpolecat"          %% "doobie-postgres"                   % doobieV,
       "ch.qos.logback"        %  "logback-classic"                   % logbackV,
