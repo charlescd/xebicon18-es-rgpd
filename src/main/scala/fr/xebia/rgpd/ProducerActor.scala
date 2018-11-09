@@ -42,7 +42,7 @@ class ProducerActor(transactor: Transactor[IO]) extends Actor with ActorLogging 
       val mess = new ProducerRecord[String, String](topic, id.toString, userCreated.asJson.noSpaces)
       producer.send(mess).get()
       log.info(s"UserCreated sent")
-      sender() ! id
+      sender() ! id.toString
 
     case UpdateAmount(id, amount) =>
       val amountUpdated: Event = AmountUpdated(id, amount)
