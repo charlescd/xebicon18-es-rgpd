@@ -21,19 +21,15 @@ class StateActor(transactor: Transactor[IO]) extends Actor with ActorLogging {
 
   def active(state: Map[String, User]): Receive = {
     case GetUser(id) =>
-      val maybeKey = StateActor.getKey(id).transact(transactor).attempt.unsafeRunSync()
-      val user = state.get(id.toString).map { encryptedUser =>
-        maybeKey match {
-          case Right(key) => encryptedUser.copy(name = Encryption.decrypt(key, encryptedUser.name))
-          case _ => encryptedUser
-        }
-      }
-      sender() ! user
+      sender() ! state.get(id.toString)
 
-    case UserCreated(id, name, _) =>
-      val user = User(id, name, 0)
-      val newState = state + (id.toString -> user)
-      log.info(s"UserCreated: $user")
+    case UserCreated(id, _) =>
+      val maybeName = StateActor.get(id).transact(transactor).attempt.unsafeRunSync()
+      val newState = maybeName match {
+        case Right(name) => state + (id.toString -> User(id, name, 0))
+        case _ => state
+      }
+      log.info(s"UserCreated")
       context become active(newState)
 
     case AmountUpdated(id, amount) =>
@@ -43,7 +39,14 @@ class StateActor(transactor: Transactor[IO]) extends Actor with ActorLogging {
       context become active(newState)
 
     case UserDeleted(id) =>
+      val user = state(id)
+      val maybeName = StateActor.get(id).transact(transactor).attempt.unsafeRunSync()
+      val newState = maybeName match {
+        case Right(name) => state + (id.toString -> User(id, name, user.amount))
+        case _ => state
+      }
       log.info(s"UserDeleted: ${id.toString}")
+      context become active(newState)
   }
 
   override def receive: Receive = active(Map.empty)
@@ -53,7 +56,7 @@ class StateActor(transactor: Transactor[IO]) extends Actor with ActorLogging {
 object StateActor {
   def props(transactor: Transactor[IO]): Props = Props(new StateActor(transactor))
 
-  def getKey(id: UUID): doobie.ConnectionIO[String] = {
-    sql"SELECT key FROM keys WHERE id = $id".query[String].unique
+  def get(id: UUID): doobie.ConnectionIO[String] = {
+    sql"SELECT name FROM users WHERE id = $id".query[String].unique
   }
 }

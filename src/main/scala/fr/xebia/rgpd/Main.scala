@@ -51,14 +51,14 @@ object Main extends App {
     pass = "rgpd"
   )
 
-  val keysTable =
+  val usersTable =
     sql"""
-          CREATE TABLE IF NOT EXISTS keys (
+          CREATE TABLE IF NOT EXISTS users (
             id UUID PRIMARY KEY,
-            key VARCHAR NOT NULL
+            name VARCHAR NOT NULL
           )
       """.update.run
-  val res = keysTable.transact(hikariTransactor).unsafeRunSync()
+  val res = usersTable.transact(hikariTransactor).unsafeRunSync()
   log.info(s"Tables created")
 
   val producerActor = system.actorOf(ProducerActor.props(hikariTransactor), "producer-actor")

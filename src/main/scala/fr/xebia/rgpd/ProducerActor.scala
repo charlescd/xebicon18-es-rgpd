@@ -33,16 +33,14 @@ class ProducerActor(transactor: Transactor[IO]) extends Actor with ActorLogging 
   override def receive: Receive = {
     case CreateUser(name) =>
       val id = UUID.randomUUID()
-      val key = UUID.randomUUID().toString
-      val encryptedName = Encryption.encrypt(key, name)
 
-      ProducerActor.createKey(id, key).transact(transactor).unsafeRunSync()
+      ProducerActor.create(id, name).transact(transactor).unsafeRunSync()
 
-      val userCreated: Event = UserCreated(id, encryptedName, 0)
+      val userCreated: Event = UserCreated(id, 0)
       val mess = new ProducerRecord[String, String](topic, id.toString, userCreated.asJson.noSpaces)
       producer.send(mess).get()
       log.info(s"UserCreated sent")
-      sender() ! id.toString
+      sender() ! id
 
     case UpdateAmount(id, amount) =>
       val amountUpdated: Event = AmountUpdated(id, amount)
@@ -51,10 +49,11 @@ class ProducerActor(transactor: Transactor[IO]) extends Actor with ActorLogging 
       log.info(s"AmountUpdated sent")
 
     case DeleteUser(id) =>
-      ProducerActor.deleteKey(id).transact(transactor).unsafeRunSync()
+      val name = ProducerActor.get(id).transact(transactor).unsafeRunSync()
+      ProducerActor.update(id, s"${name.head}XXXXXX").transact(transactor).unsafeRunSync()
 
-      val userDelete: Event = UserDeleted(id)
-      val mess = new ProducerRecord[String, String](topic, id.toString, userDelete.asJson.noSpaces)
+      val userAnon: Event = model.UserDeleted(id)
+      val mess = new ProducerRecord[String, String](topic, id.toString, userAnon.asJson.noSpaces)
       producer.send(mess).get()
       log.info(s"UserDeleted sent")
   }
@@ -63,14 +62,22 @@ class ProducerActor(transactor: Transactor[IO]) extends Actor with ActorLogging 
 object ProducerActor {
   def props(transactor: Transactor[IO]): Props = Props(new ProducerActor(transactor))
 
-  def createKey(id: UUID, key: String) = {
+  def create(id: UUID, name: String) = {
     sql"""
-            INSERT INTO keys (id, key)
-            VALUES ($id, $key)
+            INSERT INTO users (id, name)
+            VALUES ($id, $name)
         """.update.run
   }
 
-  def deleteKey(id: UUID) = {
-    sql"DELETE FROM keys WHERE id = $id".update.run
+  def update(id: UUID, anon: String) = {
+    sql"""
+          UPDATE users
+          SET name = $anon
+          WHERE id = $id
+      """.update.run
+  }
+
+  def get(id: UUID): doobie.ConnectionIO[String] = {
+    sql"SELECT name FROM users WHERE id = $id".query[String].unique
   }
 }

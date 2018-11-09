@@ -24,7 +24,7 @@ object Event {
 
 }
 
-case class UserCreated(id: UUID, name: String, amount: Int) extends Event
+case class UserCreated(id: UUID, amount: Int) extends Event
 
 case class AmountUpdated(id: UUID, amount: Int) extends Event
 
