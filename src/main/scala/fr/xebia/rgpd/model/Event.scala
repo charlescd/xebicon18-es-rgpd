@@ -1,8 +1,10 @@
 package fr.xebia.rgpd.model
 
+import java.util.UUID
+
 import io.circe.generic.auto._
-import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.syntax._
+import io.circe.{Decoder, Encoder, HCursor, Json}
 
 sealed trait Event
 
@@ -22,8 +24,8 @@ object Event {
 
 }
 
-case class UserCreated(id: String, name: String, amount: Int) extends Event
+case class UserCreated(id: UUID, name: String, amount: Int) extends Event
 
-case class AmountUpdated(id: String, amount: Int) extends Event
+case class AmountUpdated(id: UUID, amount: Int) extends Event
 
-case class UserDeleted(id: String) extends Event
+case class UserDeleted(id: UUID) extends Event

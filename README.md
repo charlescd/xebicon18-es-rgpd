@@ -5,3 +5,5 @@ curl -XDELETE localhost:9000/delete/26ca017d-915b-4bc8-8edf-126d40a063ae
 
 docker-compose exec kafka kafka-topics --create --partitions 1 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181  --topic rgpd
 docker-compose exec kafka kafka-console-consumer --bootstrap-server kafka:9092 --topic rgpd --from-beginning
+
+https://mherman.org/blog/dockerizing-a-react-app/

@@ -1,3 +1,5 @@
 package fr.xebia.rgpd.model
 
-case class User(id: String, name: String, amount: Int)
+import java.util.UUID
+
+case class User(id: UUID, name: String, amount: Int)

@@ -1,9 +1,17 @@
 package fr.xebia.rgpd
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.SupervisorStrategy._
+import akka.actor.{Actor, ActorLogging, OneForOneStrategy, Props}
 import fr.xebia.rgpd.model.{AmountUpdated, GetUser, User, UserCreated, UserDeleted}
 
 class StateActor() extends Actor with ActorLogging {
+
+  override val supervisorStrategy = OneForOneStrategy() {
+    case e =>
+      log.error(s"Error : $e")
+      log.info("Skipping")
+      Resume
+  }
 
   def active(state: Map[String, User]): Receive = {
     case GetUser(id) =>
@@ -11,13 +19,13 @@ class StateActor() extends Actor with ActorLogging {
 
     case UserCreated(id, name, _) =>
       val user = User(id, name, 0)
-      val newState = state + (id -> user)
+      val newState = state + (id.toString -> user)
       log.info(s"UserCreated: $user")
       context become active(newState)
 
     case AmountUpdated(id, amount) =>
-      val user = state(id)
-      val newState = state + (id -> User(id, user.name, user.amount + amount))
+      val user = state(id.toString)
+      val newState = state + (id.toString -> user.copy(amount = user.amount + amount))
       log.info(s"AmountUpdated")
       context become active(newState)
 

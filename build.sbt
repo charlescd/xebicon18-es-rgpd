@@ -32,5 +32,9 @@ lazy val root = (project in file(".")).
       "org.tpolecat"          %% "doobie-core"                       % doobieV,
       "org.tpolecat"          %% "doobie-postgres"                   % doobieV,
       "ch.qos.logback"        %  "logback-classic"                   % logbackV,
-    )
+    ),
+    packageName in Docker := "xebicon18-es-rgpd",
+    version in Docker := "es",
+    dockerExposedPorts := Seq(9000)
   )
+  .enablePlugins(JavaAppPackaging)

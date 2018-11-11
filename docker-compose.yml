@@ -35,12 +35,35 @@ services:
     hostname: postgres-host
     ports:
     - 5432:5432
-    depends_on:
-    - kafka
     environment:
       POSTGRES_PASSWORD: rgpd
       POSTGRES_USER: rgpd
       POSTGRES_DB: rgpd
+    extra_hosts:
+    - "moby:127.0.0.1"
+    - "localhost: 127.0.0.1"
+
+  back:
+    image: xebicon18-es-rgpd:es
+    hostname: back-host
+    ports:
+    - 9000:9000
+    depends_on:
+    - postgres
+    - kafka
+    environment:
+      BOOSTRAP_SERVER: kafka:9092
+    extra_hosts:
+    - "moby:127.0.0.1"
+    - "localhost: 127.0.0.1"
+
+  front:
+    image: xebicon18-es-rgpd-front:latest
+    hostname: front-host
+    ports:
+    - 80:80
+    depends_on:
+    - back
     extra_hosts:
     - "moby:127.0.0.1"
     - "localhost: 127.0.0.1"

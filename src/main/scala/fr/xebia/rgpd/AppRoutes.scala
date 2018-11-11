@@ -1,5 +1,7 @@
 package fr.xebia.rgpd
 
+import java.util.UUID
+
 import akka.actor.ActorRef
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -18,7 +20,7 @@ class AppRoutes(producerActor: ActorRef, stateActor: ActorRef)(implicit ec: Exec
     path("create") {
       post {
         entity(as[CreateUser]) { newUser =>
-          onSuccess((producerActor ? newUser).mapTo[String]) { id =>
+          onSuccess((producerActor ? newUser).mapTo[UUID]) { id =>
             complete(id)
           }
         }
