@@ -44,7 +44,7 @@ services:
     - "localhost: 127.0.0.1"
 
   back:
-    image: xebicon18-es-rgpd:encrypt
+    image: xebicon18-es-rgpd:anon
     hostname: back-host
     ports:
     - 9000:9000

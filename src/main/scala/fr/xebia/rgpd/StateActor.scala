@@ -39,7 +39,7 @@ class StateActor(transactor: Transactor[IO]) extends Actor with ActorLogging {
       context become active(newState)
 
     case UserDeleted(id) =>
-      val user = state(id)
+      val user = state(id.toString)
       val maybeName = StateActor.get(id).transact(transactor).attempt.unsafeRunSync()
       val newState = maybeName match {
         case Right(name) => state + (id.toString -> User(id, name, user.amount))
