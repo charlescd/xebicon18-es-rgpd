@@ -43,9 +43,10 @@ object Main extends App {
 
   import System._
 
+  val postgresServer = system.settings.config.getString("postgres.server")
   val hikariTransactor = Transactor.fromDriverManager[IO](
     driver = s"org.postgresql.Driver",
-    url = s"jdbc:postgresql://localhost:5432/rgpd",
+    url = s"jdbc:postgresql://$postgresServer/rgpd",
     user = "rgpd",
     pass = "rgpd"
   )

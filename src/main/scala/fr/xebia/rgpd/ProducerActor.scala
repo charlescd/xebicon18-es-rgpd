@@ -39,7 +39,7 @@ class ProducerActor(transactor: Transactor[IO]) extends Actor with ActorLogging 
       ProducerActor.createKey(id, key).transact(transactor).unsafeRunSync()
 
       val userCreated: Event = UserCreated(id, encryptedName, 0)
-      val mess = new ProducerRecord[String, String]("rgpd", id.toString, userCreated.asJson.noSpaces)
+      val mess = new ProducerRecord[String, String](topic, id.toString, userCreated.asJson.noSpaces)
       producer.send(mess).get()
       log.info(s"UserCreated sent")
       sender() ! id

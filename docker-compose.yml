@@ -44,7 +44,7 @@ services:
     - "localhost: 127.0.0.1"
 
   back:
-    image: xebicon18-es-rgpd:es
+    image: xebicon18-es-rgpd:encrypt
     hostname: back-host
     ports:
     - 9000:9000
@@ -53,6 +53,7 @@ services:
     - kafka
     environment:
       BOOSTRAP_SERVER: kafka:9092
+      POSTGRES_SERVER: postgres:5432
     extra_hosts:
     - "moby:127.0.0.1"
     - "localhost: 127.0.0.1"

@@ -34,7 +34,7 @@ lazy val root = (project in file(".")).
       "ch.qos.logback"        %  "logback-classic"                   % logbackV,
     ),
     packageName in Docker := "xebicon18-es-rgpd",
-    version in Docker := "es",
+    version in Docker := "encrypt",
     dockerExposedPorts := Seq(9000)
   )
   .enablePlugins(JavaAppPackaging)
